@@ -4,15 +4,143 @@
         <meta charset="utf-8">
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <title>Dorator</title>
+        <style>
+            textarea{
+                height: 300px;
+                width: 600px;
+            }
+        </style>
     </head>
-    <body>
-        <h1>Eat shift and dye</h1>
-        <br><hr>    
-        <h0>Dorator</h0>
+        <h1>Eat shift and dye</h1><hr>    
+        <h0>Dorator</h0><br>
         <a href="/">home</a>
+        <hr>
         <br>
-        <input type="text" id="tsrc" placeholder="input"><br>
-        <input type="text" id="tdest" placeholder="output" readonly="readonly">
-        <input type="button" value="Copy">
+        <fieldset>
+            <legend>Language:</legend>
+        <div>
+            <input type="radio" checked id="r1" name="lang">
+            <label for="r1">RU</label>
+        </div>
+        <div>
+            <input type="radio" id="r2" name="lang">
+            <label for="r2">EN</label>
+        </div>
+        </fieldset>
+        <br>
+        <fieldset>
+        <legend>Prikol:</legend>
+        <textarea id="tsrc" placeholder="input"></textarea>
+        <input type="button" value="Clear" onclick="$('#tsrc').val('');$('#tdest').val('');">
+        <br>
+        <textarea id="tdest" placeholder="output" readonly="readonly"></textarea>
+        <input type="button" value="Copy" onclick="copyContent()">
+    </fieldset>
     </body>
+
+    <script>
+        var letters_ru = {
+            "а": "f",
+            "б": "п",
+            "в": "и",
+            "г": "GЖ",
+            "д": "ь",
+            "е": "э",
+            "ё": "й",
+            "ж": "j",
+            "з": "з",
+            "и": "N",
+            "й": "ъ",
+            "к": "к",
+            "л": "k",
+            "м": "v",
+            "н": "h",
+            "о": "0",
+            "п": "🪑",
+            "р": "Ь",
+            "с": "ↄ",
+            "т": "т",
+            "у": "у",
+            "ф": "ф",
+            "х": "х",
+            "ц": "с",
+            "ш": "?",
+            "щ": "ч",
+            "ь": "b",
+            "ъ": "в",
+            "ю": "у",
+            "э": "є"
+        }
+        var letters_en = {
+            "q": "кью",
+            "w": "m",
+            "e": "3",
+            "r": "г",
+            "t": "ь",
+            "y": "w",
+            "u": "v",
+            "i": "l",
+            "o": "()",
+            "p": "ь",
+            "a": "е",
+            "s": "z",
+            "d": "ДЪ",
+            "f": "🍆",
+            "g": "j",
+            "h": "h",
+            "j": "i",
+            "k": "к",
+            "l": "i",
+            "z": "z",
+            "x": "x",
+            "c": "з",
+            "v": "w",
+            "b": "ь",
+            "n": "п",
+            "m": "м"
+        }
+
+        var curdict = letters_ru;
+
+            
+        var oldVal = "";
+        let text = document.getElementById('tdest').innerHTML;
+        const copyContent = async () => {
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch (err) {
+            console.error('Failed:', err);
+          }
+        }
+        $("#tsrc").on('change keyup paste', function() {
+            if(document.getElementById('r1').checked) {
+                curdict = letters_ru;
+            }else {
+                curdict = letters_en;
+            }
+            var currentVal = $(this).val();
+            if(currentVal == oldVal) {
+                return;
+            }
+            oldVal = currentVal;
+            // result = currentVal.replace(/[^a-z]+/gi, m => curdict[m]);
+            result = "";
+            for (let i = 0; i < currentVal.length; i++) {
+                sym = currentVal.charAt(i).toLowerCase();
+                for (var key in curdict){
+                    // console.log( key, curdict[key] );
+                    if (sym == key){
+                        result+=curdict[key];
+                        break;
+                    }
+                    if ((sym in curdict) == false || curdict[key] == ""){
+                        result+=sym;
+                        break;
+                    }
+                }                
+            }
+            $("#tdest").val(result);
+            console.log("changed!", currentVal);
+        });
+      </script>
 </html>
