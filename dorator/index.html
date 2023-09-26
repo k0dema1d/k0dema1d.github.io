@@ -30,6 +30,9 @@
         <br>
         <fieldset>
         <legend>Prikol:</legend>
+        <label for="degradation">Degradation value:</label>
+        <input type="range" id="degradation" name="degradation" min="0" max="1" step="0.05" value="0.3">
+        <br><br>
         <textarea id="tsrc" placeholder="input"></textarea>
         <input type="button" value="Clear" onclick="$('#tsrc').val('');$('#tdest').val('');">
         <br>
@@ -100,6 +103,7 @@
             "m": "м"
         }
 
+        function getRandomFloat(min, max, decimals) {const str = (Math.random() * (max - min) + min).toFixed(decimals,);return parseFloat(str);}
         var curdict = letters_ru;
 
             
@@ -112,17 +116,19 @@
             console.error('Failed:', err);
           }
         }
-        $("#tsrc").on('change keyup paste', function() {
+        function perform(){
             if(document.getElementById('r1').checked) {
                 curdict = letters_ru;
             }else {
                 curdict = letters_en;
             }
-            var currentVal = $(this).val();
+            var currentVal = $("#tsrc").val();
             if(currentVal == oldVal) {
                 return;
             }
             oldVal = currentVal;
+            chanceslider = $("#degradation").val();
+
             // result = currentVal.replace(/[^a-z]+/gi, m => curdict[m]);
             result = "";
             for (let i = 0; i < currentVal.length; i++) {
@@ -130,7 +136,12 @@
                 for (var key in curdict){
                     // console.log( key, curdict[key] );
                     if (sym == key){
-                        result+=curdict[key];
+                        chancecurrent = getRandomFloat(0,1,2)
+                        if (chancecurrent <= chanceslider){
+                            result+=curdict[key];
+                        } else {
+                            result+=sym;
+                        }
                         break;
                     }
                     if ((sym in curdict) == false || curdict[key] == ""){
@@ -140,7 +151,9 @@
                 }                
             }
             $("#tdest").val(result);
-            console.log("changed!", currentVal);
-        });
+            console.log("changed!", currentVal); 
+            return;           
+        }       
+        $("#tsrc").on('change keyup paste', function() {perform();});
       </script>
 </html>
